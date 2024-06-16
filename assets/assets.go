@@ -12,6 +12,7 @@ import (
 var assets embed.FS
 
 var PlayerSprite = mustLoadImage("player.png")
+var BackGroundSprite = mustLoadImage("background.png")
 
 func mustLoadImage(name string) *ebiten.Image {
 	f, err := assets.Open(name)
