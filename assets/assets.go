@@ -4,6 +4,7 @@ import (
 	"embed"
 	"image"
 	_ "image/png"
+	"io/fs"
 
 	"github.com/hajimehoshi/ebiten/v2"
 )
@@ -13,6 +14,7 @@ var assets embed.FS
 
 var PlayerSprite = mustLoadImage("player.png")
 var BackGroundSprite = mustLoadImage("background.png")
+var MeteorSprites = mustLoadImages("meteors/*.png")
 
 func mustLoadImage(name string) *ebiten.Image {
 	f, err := assets.Open(name)
@@ -26,4 +28,18 @@ func mustLoadImage(name string) *ebiten.Image {
 		panic(err)
 	}
 	return ebiten.NewImageFromImage(img)
+}
+
+func mustLoadImages(name string) []*ebiten.Image {
+	matches, err := fs.Glob(assets, name)
+	if err != nil {
+		panic(err)
+	}
+
+	images := make([]*ebiten.Image, len(matches))
+	for i, match := range matches {
+		images[i] = mustLoadImage(match)
+	}
+
+	return images
 }
