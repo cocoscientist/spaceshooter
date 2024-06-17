@@ -13,12 +13,14 @@ import (
 
 //go:embed *
 var assets embed.FS
+var gameFontName = "PressStart2P-Regular.ttf"
 
 var PlayerSprite = mustLoadImage("player.png")
 var BackGroundSprite = mustLoadImage("background.png")
 var MeteorSprites = mustLoadImages("meteors/*.png")
 var LaserSprite = mustLoadImage("laserPlayer.png")
-var GameFont = mustLoadFont("PressStart2P-Regular.ttf")
+var ScoreFont = mustLoadFont(gameFontName, 48, 32)
+var GameOverFont = mustLoadFont(gameFontName, 32, 56)
 
 func mustLoadImage(name string) *ebiten.Image {
 	f, err := assets.Open(name)
@@ -48,7 +50,7 @@ func mustLoadImages(name string) []*ebiten.Image {
 	return images
 }
 
-func mustLoadFont(name string) font.Face {
+func mustLoadFont(name string, size float64, dpi float64) font.Face {
 	f, err := assets.ReadFile(name)
 	if err != nil {
 		panic(err)
@@ -60,8 +62,8 @@ func mustLoadFont(name string) font.Face {
 	}
 
 	face, err := opentype.NewFace(tt, &opentype.FaceOptions{
-		Size:    48,
-		DPI:     72,
+		Size:    size,
+		DPI:     dpi,
 		Hinting: font.HintingVertical,
 	})
 	if err != nil {

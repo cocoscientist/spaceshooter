@@ -31,7 +31,7 @@ func NewMeteor(baseSpeed float64) *Meteor {
 	return &Meteor{
 		sprite:        sprite,
 		position:      position,
-		velocity:      velocity,
+		velocity:      velocity, 
 		rotationSpeed: rotationSpeed,
 	}
 }

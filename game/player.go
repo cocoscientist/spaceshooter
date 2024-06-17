@@ -28,11 +28,11 @@ func NewPlayer() *Player {
 }
 
 func (p *Player) Update() {
-	speed := speedPerSecond / float64(ebiten.TPS())
+	deltaXPerTick := speedPerSecond / float64(ebiten.TPS())
 	if ebiten.IsKeyPressed(ebiten.KeyLeft) {
-		p.position.X -= speed
+		p.position.X -= deltaXPerTick
 	} else if ebiten.IsKeyPressed(ebiten.KeyRight) {
-		p.position.X += speed
+		p.position.X += deltaXPerTick
 	}
 }
 
