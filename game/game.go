@@ -2,10 +2,12 @@ package game
 
 import (
 	"fmt"
+	"image/color"
+	"spaceshooter/assets"
 	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
+	"github.com/hajimehoshi/ebiten/v2/text"
 )
 
 const (
@@ -86,7 +88,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	for _, laser := range g.lasers {
 		laser.Draw(screen)
 	}
-	ebitenutil.DebugPrint(screen, fmt.Sprintf("Score: %02d", g.score))
+	text.Draw(screen, fmt.Sprintf("%04d", g.score), assets.GameFont, screenWidth/2-100, 90, color.White)
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {

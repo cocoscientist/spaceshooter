@@ -7,6 +7,8 @@ import (
 	"io/fs"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"golang.org/x/image/font"
+	"golang.org/x/image/font/opentype"
 )
 
 //go:embed *
@@ -16,6 +18,7 @@ var PlayerSprite = mustLoadImage("player.png")
 var BackGroundSprite = mustLoadImage("background.png")
 var MeteorSprites = mustLoadImages("meteors/*.png")
 var LaserSprite = mustLoadImage("laserPlayer.png")
+var GameFont = mustLoadFont("PressStart2P-Regular.ttf")
 
 func mustLoadImage(name string) *ebiten.Image {
 	f, err := assets.Open(name)
@@ -43,4 +46,27 @@ func mustLoadImages(name string) []*ebiten.Image {
 	}
 
 	return images
+}
+
+func mustLoadFont(name string) font.Face {
+	f, err := assets.ReadFile(name)
+	if err != nil {
+		panic(err)
+	}
+
+	tt, err := opentype.Parse(f)
+	if err != nil {
+		panic(err)
+	}
+
+	face, err := opentype.NewFace(tt, &opentype.FaceOptions{
+		Size:    48,
+		DPI:     72,
+		Hinting: font.HintingVertical,
+	})
+	if err != nil {
+		panic(err)
+	}
+
+	return face
 }
