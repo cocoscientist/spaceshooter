@@ -1,9 +1,11 @@
 package game
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 )
 
 const (
@@ -83,6 +85,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	for _, laser := range g.lasers {
 		laser.Draw(screen)
 	}
+	ebitenutil.DebugPrint(screen, fmt.Sprintf("Score: %02d", g.score))
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
