@@ -68,9 +68,10 @@ func (g *Game) Update() error {
 			}
 		}
 	}
-	for _, meteor := range g.meteors {
+	for i, meteor := range g.meteors {
 		if meteor.CheckCollision(g.player.position.X, g.player.position.Y, g.player.getWidth(), g.player.getHeight()) {
 			g.score = 0
+			g.meteors = append(g.meteors[:i], g.meteors[i+1:]...)
 		}
 	}
 	return nil
