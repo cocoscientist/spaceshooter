@@ -10,7 +10,6 @@ import (
 const (
 	rotationSpeedMin = -2
 	rotationSpeedMax = 2
-	baseVelocity     = 200
 )
 
 type Meteor struct {
@@ -21,13 +20,13 @@ type Meteor struct {
 	sprite        *ebiten.Image
 }
 
-func NewMeteor() *Meteor {
+func NewMeteor(baseSpeed float64) *Meteor {
 	sprite := assets.MeteorSprites[rand.Intn(len(assets.MeteorSprites))]
 	position := Vector{
 		X: rand.Float64() * (800 - float64(sprite.Bounds().Dx())),
 		Y: -1 * float64(sprite.Bounds().Dy()),
 	}
-	velocity := baseVelocity + rand.Float64()*50
+	velocity := baseSpeed + rand.Float64()*50
 	rotationSpeed := rotationSpeedMin + rand.Float64()*(rotationSpeedMax-rotationSpeedMin)
 	return &Meteor{
 		sprite:        sprite,
