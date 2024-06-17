@@ -1,6 +1,7 @@
 package game
 
 import (
+	"math"
 	"math/rand"
 	"spaceshooter/assets"
 
@@ -55,4 +56,25 @@ func (m *Meteor) Draw(screen *ebiten.Image) {
 	op.GeoM.Translate(m.position.X, m.position.Y)
 
 	screen.DrawImage(m.sprite, op)
+}
+
+func (m *Meteor) CheckCollision(x float64, y float64, w float64, h float64) bool {
+	radius := math.Max(float64(m.sprite.Bounds().Dx())/2, float64(m.sprite.Bounds().Dy())/2)
+	distanceX := math.Abs(m.position.X - x - (w / 2))
+	distanceY := math.Abs(m.position.Y - y - (h / 2))
+	if distanceX > (radius + w/2) {
+		return false
+	}
+	if distanceY > (radius + h/2) {
+		return false
+	}
+	if distanceX < w/2 {
+		return true
+	}
+	if distanceY < h/2 {
+		return true
+	}
+
+	squaredCornered := math.Pow(m.position.X-(w/2), 2) + math.Pow(m.position.Y-(h/2), 2)
+	return squaredCornered <= math.Pow(radius, 2)
 }

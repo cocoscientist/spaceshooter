@@ -41,3 +41,11 @@ func (p *Player) Draw(screen *ebiten.Image) {
 	op.GeoM.Translate(p.position.X, p.position.Y)
 	screen.DrawImage(p.sprite, op)
 }
+
+func (p *Player) getWidth() float64 {
+	return float64(p.sprite.Bounds().Dx())
+}
+
+func (p *Player) getHeight() float64 {
+	return float64(p.sprite.Bounds().Dy())
+}

@@ -31,3 +31,11 @@ func (l *Laser) Draw(screen *ebiten.Image) {
 	op.GeoM.Translate(l.position.X, l.position.Y)
 	screen.DrawImage(l.sprite, op)
 }
+
+func (l *Laser) getWidth() float64 {
+	return float64(l.sprite.Bounds().Dx())
+}
+
+func (l *Laser) getHeight() float64 {
+	return float64(l.sprite.Bounds().Dy())
+}

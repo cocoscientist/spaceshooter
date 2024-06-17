@@ -18,6 +18,7 @@ type Game struct {
 	meteors          []*Meteor
 	lasers           []*Laser
 	laserTimer       *Timer
+	score            int
 }
 
 func NewGame() *Game {
@@ -54,6 +55,20 @@ func (g *Game) Update() error {
 		laser.Update()
 		if laser.position.Y < 0 {
 			g.lasers = append(g.lasers[:i], g.lasers[i+1:]...)
+		}
+	}
+	for i, laser := range g.lasers {
+		for j, meteor := range g.meteors {
+			if meteor.CheckCollision(laser.position.X, laser.position.Y, laser.getWidth(), laser.getHeight()) {
+				g.score++
+				g.meteors = append(g.meteors[:j], g.meteors[j+1:]...)
+				g.lasers = append(g.lasers[:i], g.lasers[i+1:]...)
+			}
+		}
+	}
+	for _, meteor := range g.meteors {
+		if meteor.CheckCollision(g.player.position.X, g.player.position.Y, g.player.getWidth(), g.player.getHeight()) {
+			g.score = 0
 		}
 	}
 	return nil
