@@ -121,11 +121,12 @@ func (g *Game) Draw(screen *ebiten.Image) {
 		for _, laser := range g.lasers {
 			laser.Draw(screen)
 		}
-		text.Draw(screen, fmt.Sprintf("Lives left: %02d    Score: %04d", g.lives, g.score), assets.ScoreFont, screenWidth/2-300, 90, color.White)
+		text.Draw(screen, fmt.Sprintf("SCORE:%04d", g.score), assets.ScoreFont, 20, 60, color.White)
+		text.Draw(screen, fmt.Sprintf("LIVES:%02d", g.lives), assets.ScoreFont, screenWidth-186, 60, color.White)
 	} else {
-		text.Draw(screen, fmt.Sprintf("Final Score: %04d", g.score), assets.GameOverFont, screenWidth/2-190, 90, color.White)
-		text.Draw(screen, fmt.Sprintf("Game Over!"), assets.GameOverFont, screenWidth/2-100, screenHeight/2-100, color.White)
-		text.Draw(screen, fmt.Sprintf("Press Space to Play Again!"), assets.GameOverFont, screenWidth/2-300, screenHeight/2, color.White)
+		text.Draw(screen, fmt.Sprintf("FINAL SCORE: %04d", g.score), assets.GameOverFont, screenWidth/2-200, 90, color.White)
+		text.Draw(screen, fmt.Sprintf("GAME OVER!"), assets.GameOverFont, screenWidth/2-114, screenHeight/2-100, color.White)
+		text.Draw(screen, fmt.Sprintf("Press Space to Play Again!"), assets.GameOverFont, screenWidth/2-302, screenHeight/2, color.White)
 	}
 }
 
