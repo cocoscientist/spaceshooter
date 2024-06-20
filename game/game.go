@@ -98,7 +98,8 @@ func (g *Game) Update() error {
 
 		// Check for collision between player and meteors
 		collidingMeteors := g.getPlayerCollidingMeteors()
-		if len(collidingMeteors) > 0 {
+		if len(collidingMeteors) > 0 && !g.player.isHit {
+			g.player.SetHit()
 			g.lives--
 			if g.lives == 0 {
 				g.gameOver = true
