@@ -75,6 +75,11 @@ func (g *Game) Update() error {
 				}
 			}(laser, i)
 		}
+		hittingBullets := g.enemies.CheckBulletHit(g.lasers)
+		g.score += len(hittingBullets)
+		for _, index := range hittingBullets {
+			g.lasers = append(g.lasers[:index], g.lasers[index+1:]...)
+		}
 
 		// Check for collision between player and meteors
 		collidingMeteors := g.getPlayerCollidingMeteors()
@@ -86,6 +91,19 @@ func (g *Game) Update() error {
 			} else {
 				for _, meteorIndex := range collidingMeteors {
 					g.meteors.RemoveMeteor(meteorIndex)
+				}
+			}
+		}
+		//Check for collision between player and enemies
+		collidingEnemies := g.enemies.CheckCollisionWithPlayer(g.player)
+		if len(collidingEnemies) > 0 && !g.player.isHit {
+			g.player.SetHit()
+			g.lives--
+			if g.lives == 0 {
+				g.gameOver = true
+			} else {
+				for _, enemyIndex := range collidingEnemies {
+					g.enemies.removeEnemy(enemyIndex)
 				}
 			}
 		}
