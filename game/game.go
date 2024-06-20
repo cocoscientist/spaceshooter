@@ -109,6 +109,19 @@ func (g *Game) Update() error {
 				}
 			}
 		}
+		//Check for collision between player and enemies
+		collidingEnemies := g.enemies.CheckCollisionWithPlayer(g.player)
+		if len(collidingEnemies) > 0 && !g.player.isHit {
+			g.player.SetHit()
+			g.lives--
+			if g.lives == 0 {
+				g.gameOver = true
+			} else {
+				for _, enemyIndex := range collidingEnemies {
+					g.enemies.enemies = append(g.enemies.enemies[:enemyIndex], g.enemies.enemies[enemyIndex+1:]...)
+				}
+			}
+		}
 	}
 
 	return nil

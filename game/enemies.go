@@ -32,6 +32,16 @@ func (e *Enemies) UpdateAllEnemies(p *Player, baseSpeed float64) {
 	}
 }
 
+func (e *Enemies) CheckCollisionWithPlayer(p *Player) []int {
+	var collidingEnemies []int
+	for i, enemy := range e.enemies {
+		if enemy.CheckCollision(p.position.X, p.position.Y, p.getWidth(), p.getHeight()) {
+			collidingEnemies = append(collidingEnemies, i)
+		}
+	}
+	return collidingEnemies
+}
+
 func (e *Enemies) DrawAllEnemies(screen *ebiten.Image) {
 	for _, enemy := range e.enemies {
 		enemy.Draw(screen)
