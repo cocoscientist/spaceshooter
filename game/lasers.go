@@ -11,6 +11,10 @@ type Lasers struct {
 	laserCooldownTimer *Timer
 }
 
+func (l *Lasers) ResetCooldown(){
+	l.laserCooldownTimer.currentTicks = l.laserCooldownTimer.targetTicks
+}
+
 func NewLasers(resetTime time.Duration) *Lasers {
 	e := &Lasers{}
 	e.laserCooldownTimer = NewTimer(resetTime)
@@ -18,30 +22,30 @@ func NewLasers(resetTime time.Duration) *Lasers {
 
 }
 
-func (e *Lasers) UpdateAllLasers(player *Player) {
-	e.laserCooldownTimer.Update()
-	if e.laserCooldownTimer.IsReady() && ebiten.IsKeyPressed(ebiten.KeySpace) {
-		e.laserCooldownTimer.Reset()
-		e.AddRandomLaser(player)
+func (l *Lasers) UpdateAllLasers(player *Player) {
+	l.laserCooldownTimer.Update()
+	if l.laserCooldownTimer.IsReady() && ebiten.IsKeyPressed(ebiten.KeySpace) {
+		l.laserCooldownTimer.Reset()
+		l.AddRandomLaser(player)
 	}
-	for i, laser := range e.lasers {
+	for i, laser := range l.lasers {
 		laser.Update()
 		if laser.position.Y < 0 {
-			e.RemoveLaser(i)
+			l.RemoveLaser(i)
 		}
 	}
 }
 
-func (e *Lasers) DrawAllLasers(screen *ebiten.Image) {
-	for _, laser := range e.lasers {
+func (l *Lasers) DrawAllLasers(screen *ebiten.Image) {
+	for _, laser := range l.lasers {
 		laser.Draw(screen)
 	}
 }
 
-func (e *Lasers) AddRandomLaser(player *Player) {
-	e.lasers = append(e.lasers, NewLaser(player.position.X+float64(player.sprite.Bounds().Dx())/2))
+func (l *Lasers) AddRandomLaser(player *Player) {
+	l.lasers = append(l.lasers, NewLaser(player.position.X+float64(player.sprite.Bounds().Dx())/2))
 }
 
-func (e *Lasers) RemoveLaser(position int) {
-	e.lasers = append(e.lasers[:position], e.lasers[position+1:]...)
+func (l *Lasers) RemoveLaser(position int) {
+	l.lasers = append(l.lasers[:position], l.lasers[position+1:]...)
 }
