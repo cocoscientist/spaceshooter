@@ -65,17 +65,19 @@ func (g *Game) Update() error {
 			g.baseSpeed += 10
 		}
 		for i, laser := range g.lasers.lasers {
-			func(laser *Laser, i int) {
-				for j, meteor := range g.meteors.meteors {
-					if meteor.CheckCollision(laser.position.X, laser.position.Y, laser.getWidth(), laser.getHeight()) {
-						g.score++
-						g.lasers.RemoveLaser(i)
-						g.meteors.RemoveMeteor(j)
-					}
+			for j, meteor := range g.meteors.meteors {
+				if meteor.CheckCollision(laser.position.X, laser.position.Y, laser.getWidth(), laser.getHeight()) {
+					g.score++
+					g.lasers.RemoveLaser(i)
+					g.meteors.RemoveMeteor(j)
+					g.lasers.ResetCooldown()
 				}
-			}(laser, i)
+			}
 		}
 		hittingBullets := g.enemies.CheckBulletHit(g.lasers.lasers)
+		if len(hittingBullets) > 0 {
+			g.lasers.ResetCooldown()
+		}
 		g.score += len(hittingBullets)
 		for _, index := range hittingBullets {
 			g.lasers.RemoveLaser(index)

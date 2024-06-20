@@ -66,5 +66,8 @@ func (e *Enemies) AddRandomEnemy(baseSpeed float64) {
 }
 
 func (e *Enemies) RemoveEnemy(position int) {
+	if position < 0 || position > len(e.enemies) {
+		return
+	}
 	e.enemies = append(e.enemies[:position], e.enemies[position+1:]...)
 }

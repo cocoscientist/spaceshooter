@@ -18,30 +18,33 @@ func NewMeteors(resetTime time.Duration) *Meteors {
 
 }
 
-func (e *Meteors) UpdateAllMeteors(baseSpeed float64) {
-	e.meteorSpawnTimer.Update()
-	if e.meteorSpawnTimer.IsReady() {
-		e.AddRandomMeteor(baseSpeed)
-		e.meteorSpawnTimer.Reset()
+func (m *Meteors) UpdateAllMeteors(baseSpeed float64) {
+	m.meteorSpawnTimer.Update()
+	if m.meteorSpawnTimer.IsReady() {
+		m.AddRandomMeteor(baseSpeed)
+		m.meteorSpawnTimer.Reset()
 	}
-	for i, meteor := range e.meteors {
+	for i, meteor := range m.meteors {
 		meteor.Update()
 		if meteor.position.Y > 600 {
-			e.RemoveMeteor(i)
+			m.RemoveMeteor(i)
 		}
 	}
 }
 
-func (e *Meteors) DrawAllMeteors(screen *ebiten.Image) {
-	for _, meteor := range e.meteors {
+func (m *Meteors) DrawAllMeteors(screen *ebiten.Image) {
+	for _, meteor := range m.meteors {
 		meteor.Draw(screen)
 	}
 }
 
-func (e *Meteors) AddRandomMeteor(baseSpeed float64) {
-	e.meteors = append(e.meteors, NewMeteor(baseSpeed))
+func (m *Meteors) AddRandomMeteor(baseSpeed float64) {
+	m.meteors = append(m.meteors, NewMeteor(baseSpeed))
 }
 
-func (e *Meteors) RemoveMeteor(position int) {
-	e.meteors = append(e.meteors[:position], e.meteors[position+1:]...)
+func (m *Meteors) RemoveMeteor(position int) {
+	if position < 0 || position > len(m.meteors) {
+		return
+	}
+	m.meteors = append(m.meteors[:position], m.meteors[position+1:]...)
 }
