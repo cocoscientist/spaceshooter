@@ -14,7 +14,7 @@ const (
 )
 
 type Player struct {
-	position Vector
+	position *Vector
 	sprite   *ebiten.Image
 	hitTimer *Timer
 	isHit    bool
@@ -22,7 +22,7 @@ type Player struct {
 
 func NewPlayer() *Player {
 	sprite := assets.PlayerSprite
-	position := Vector{
+	position := &Vector{
 		X: 350,
 		Y: 500,
 	}
