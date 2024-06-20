@@ -48,7 +48,7 @@ func (e *Enemies) CheckBulletHit(l []*Laser) []int {
 		for j, enemy := range e.enemies {
 			if enemy.CheckCollision(laser.position.X, laser.position.Y, laser.getWidth(), laser.getHeight()) {
 				collidingBullets = append(collidingBullets, i)
-				e.removeEnemy(j)
+				e.RemoveEnemy(j)
 			}
 		}
 	}
