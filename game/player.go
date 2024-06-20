@@ -40,12 +40,7 @@ func (p *Player) Update() {
 	} else if ebiten.IsKeyPressed(ebiten.KeyRight) {
 		p.position.X += deltaXPerTick
 	}
-	// if p.isHit && p.hitTimer == nil {
-	// 	p.hitTimer = NewTimer(3 * time.Second)
-	// } else if p.isHit && p.hitTimer.IsReady() {
-	// 	p.isHit = false
-	// 	p.hitTimer = nil
-	// }
+
 	if p.isHit {
 		if p.hitTimer == nil {
 			p.hitTimer = NewTimer(2 * time.Second)
@@ -59,8 +54,6 @@ func (p *Player) Update() {
 }
 
 func (p *Player) Draw(screen *ebiten.Image) {
-	// op := &ebiten.DrawImageOptions{}
-	// op.GeoM.Translate(p.position.X, p.position.Y)
 	cp := &colorm.DrawImageOptions{}
 	cp.GeoM.Translate(p.position.X, p.position.Y)
 	var cm colorm.ColorM
