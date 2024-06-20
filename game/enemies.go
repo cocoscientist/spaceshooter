@@ -42,6 +42,19 @@ func (e *Enemies) CheckCollisionWithPlayer(p *Player) []int {
 	return collidingEnemies
 }
 
+func (e *Enemies) CheckBulletHit(l []*Laser) []int {
+	var collidingBullets []int
+	for i, laser := range l {
+		for j, enemy := range e.enemies {
+			if enemy.CheckCollision(laser.position.X, laser.position.Y, laser.getWidth(), laser.getHeight()) {
+				collidingBullets = append(collidingBullets, i)
+				e.removeEnemy(j)
+			}
+		}
+	}
+	return collidingBullets
+}
+
 func (e *Enemies) DrawAllEnemies(screen *ebiten.Image) {
 	for _, enemy := range e.enemies {
 		enemy.Draw(screen)
