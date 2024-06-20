@@ -19,6 +19,7 @@ var PlayerSprite = mustLoadImage("player.png")
 var BackGroundSprite = mustLoadImage("background.png")
 var MeteorSprites = mustLoadImages("meteors/*.png")
 var LaserSprite = mustLoadImage("laserPlayer.png")
+var EnemySprites = mustLoadImages("enemies/*.png")
 var ScoreFont = mustLoadFont(gameFontName, 48, 32)
 var GameOverFont = mustLoadFont(gameFontName, 32, 56)
 

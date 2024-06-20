@@ -23,6 +23,7 @@ type Game struct {
 	meteorSpawnTimer *Timer
 	meteors          []*Meteor
 	lasers           []*Laser
+	enemies          *Enemies
 	laserTimer       *Timer
 	speedupTimer     *Timer
 	baseSpeed        float64
@@ -33,7 +34,8 @@ type Game struct {
 
 func NewGame() *Game {
 	g := &Game{}
-	g.meteorSpawnTimer = NewTimer(1250 * time.Millisecond)
+	g.enemies = NewEnemies()
+	g.meteorSpawnTimer = NewTimer(12500 * time.Millisecond)
 	g.laserTimer = NewTimer(1000 * time.Millisecond)
 	g.speedupTimer = NewTimer(3500 * time.Millisecond)
 	g.player = NewPlayer()
@@ -52,6 +54,7 @@ func (g *Game) Update() error {
 		}
 	} else {
 		g.player.Update()
+		g.enemies.UpdateAllEnemies(g.player, g.baseSpeed)
 		g.meteorSpawnTimer.Update()
 		if g.meteorSpawnTimer.IsReady() {
 			g.meteorSpawnTimer.Reset()
@@ -82,14 +85,17 @@ func (g *Game) Update() error {
 			}
 		}
 		for i, laser := range g.lasers {
-			for j, meteor := range g.meteors {
-				if meteor.CheckCollision(laser.position.X, laser.position.Y, laser.getWidth(), laser.getHeight()) {
-					g.score++
-					g.meteors = append(g.meteors[:j], g.meteors[j+1:]...)
-					g.lasers = append(g.lasers[:i], g.lasers[i+1:]...)
+			func(laser *Laser, i int) {
+				for j, meteor := range g.meteors {
+					if meteor.CheckCollision(laser.position.X, laser.position.Y, laser.getWidth(), laser.getHeight()) {
+						g.score++
+						g.meteors = append(g.meteors[:j], g.meteors[j+1:]...)
+						g.lasers = append(g.lasers[:i], g.lasers[i+1:]...)
+					}
 				}
-			}
+			}(laser, i)
 		}
+
 		// Check for collision between player and meteors
 		collidingMeteors := g.getPlayerCollidingMeteors()
 		if len(collidingMeteors) > 0 {
@@ -111,6 +117,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	g.bg.Draw(screen)
 	if !g.gameOver {
 		g.player.Draw(screen)
+		g.enemies.DrawAllEnemies(screen)
 		for _, meteor := range g.meteors {
 			meteor.Draw(screen)
 		}
@@ -141,6 +148,7 @@ func (g *Game) resetGame() {
 	g.baseSpeed = initialBaseSpeed
 	g.lasers = make([]*Laser, 0)
 	g.meteors = make([]*Meteor, 0)
+	g.enemies = NewEnemies()
 }
 
 func (g *Game) getPlayerCollidingMeteors() []int {
