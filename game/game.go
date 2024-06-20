@@ -11,33 +11,35 @@ import (
 )
 
 const (
-	screenWidth      = 800
-	screenHeight     = 600
-	initialBaseSpeed = 200
-	startingLives    = 3
+	screenWidth         = 800
+	screenHeight        = 600
+	initialBaseSpeed    = 200
+	startingLives       = 3
+	meteorSpawnTime     = 1500 * time.Millisecond
+	laserCooldownTime   = 1000 * time.Millisecond
+	enemySpawnTime      = 3000 * time.Millisecond
+	speedupIntervalTime = 5000 * time.Millisecond
 )
 
 type Game struct {
-	player           *Player
-	bg               *Background
-	meteorSpawnTimer *Timer
-	meteors          []*Meteor
-	lasers           []*Laser
-	enemies          *Enemies
-	laserTimer       *Timer
-	speedupTimer     *Timer
-	baseSpeed        float64
-	score            int
-	lives            int
-	gameOver         bool
+	player       *Player
+	bg           *Background
+	meteors      *Meteors
+	lasers       *Lasers
+	enemies      *Enemies
+	speedupTimer *Timer
+	baseSpeed    float64
+	score        int
+	lives        int
+	gameOver     bool
 }
 
 func NewGame() *Game {
 	g := &Game{}
-	g.enemies = NewEnemies()
-	g.meteorSpawnTimer = NewTimer(12500 * time.Millisecond)
-	g.laserTimer = NewTimer(1000 * time.Millisecond)
-	g.speedupTimer = NewTimer(3500 * time.Millisecond)
+	g.meteors = NewMeteors(meteorSpawnTime)
+	g.lasers = NewLasers(laserCooldownTime)
+	g.enemies = NewEnemies(enemySpawnTime)
+	g.speedupTimer = NewTimer(speedupIntervalTime)
 	g.player = NewPlayer()
 	g.bg = NewBackground()
 	g.baseSpeed = initialBaseSpeed
@@ -55,42 +57,20 @@ func (g *Game) Update() error {
 	} else {
 		g.player.Update()
 		g.enemies.UpdateAllEnemies(g.player, g.baseSpeed)
-		g.meteorSpawnTimer.Update()
-		if g.meteorSpawnTimer.IsReady() {
-			g.meteorSpawnTimer.Reset()
-			m := NewMeteor(g.baseSpeed)
-			g.meteors = append(g.meteors, m)
-		}
-		g.laserTimer.Update()
-		if g.laserTimer.IsReady() && ebiten.IsKeyPressed(ebiten.KeySpace) {
-			g.laserTimer.Reset()
-			l := NewLaser(g.player.position.X + float64(g.player.sprite.Bounds().Dx())/2)
-			g.lasers = append(g.lasers, l)
-		}
+		g.meteors.UpdateAllMeteors(g.baseSpeed)
+		g.lasers.UpdateAllLasers(g.player)
 		g.speedupTimer.Update()
 		if g.speedupTimer.IsReady() {
 			g.speedupTimer.Reset()
 			g.baseSpeed += 10
 		}
-		for i, meteor := range g.meteors {
-			meteor.Update()
-			if meteor.position.Y > 600 {
-				g.meteors = append(g.meteors[:i], g.meteors[i+1:]...)
-			}
-		}
-		for i, laser := range g.lasers {
-			laser.Update()
-			if laser.position.Y < 0 {
-				g.lasers = append(g.lasers[:i], g.lasers[i+1:]...)
-			}
-		}
-		for i, laser := range g.lasers {
+		for i, laser := range g.lasers.lasers {
 			func(laser *Laser, i int) {
-				for j, meteor := range g.meteors {
+				for j, meteor := range g.meteors.meteors {
 					if meteor.CheckCollision(laser.position.X, laser.position.Y, laser.getWidth(), laser.getHeight()) {
 						g.score++
-						g.meteors = append(g.meteors[:j], g.meteors[j+1:]...)
-						g.lasers = append(g.lasers[:i], g.lasers[i+1:]...)
+						g.lasers.RemoveLaser(i)
+						g.meteors.RemoveMeteor(j)
 					}
 				}
 			}(laser, i)
@@ -105,7 +85,7 @@ func (g *Game) Update() error {
 				g.gameOver = true
 			} else {
 				for _, meteorIndex := range collidingMeteors {
-					g.meteors = append(g.meteors[:meteorIndex], g.meteors[meteorIndex+1:]...)
+					g.meteors.RemoveMeteor(meteorIndex)
 				}
 			}
 		}
@@ -119,10 +99,10 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	if !g.gameOver {
 		g.player.Draw(screen)
 		g.enemies.DrawAllEnemies(screen)
-		for _, meteor := range g.meteors {
+		for _, meteor := range g.meteors.meteors {
 			meteor.Draw(screen)
 		}
-		for _, laser := range g.lasers {
+		for _, laser := range g.lasers.lasers {
 			laser.Draw(screen)
 		}
 		text.Draw(screen, fmt.Sprintf("SCORE:%04d", g.score), assets.ScoreFont, 20, 60, color.White)
@@ -142,19 +122,17 @@ func (g *Game) resetGame() {
 	g.gameOver = false
 	g.score = 0
 	g.player.Reset()
-	g.meteorSpawnTimer.Reset()
-	g.laserTimer.Reset()
 	g.speedupTimer.Reset()
 	g.lives = startingLives
 	g.baseSpeed = initialBaseSpeed
-	g.lasers = make([]*Laser, 0)
-	g.meteors = make([]*Meteor, 0)
-	g.enemies = NewEnemies()
+	g.meteors = NewMeteors(meteorSpawnTime)
+	g.lasers = NewLasers(laserCooldownTime)
+	g.enemies = NewEnemies(enemySpawnTime)
 }
 
 func (g *Game) getPlayerCollidingMeteors() []int {
 	var collidingMeteors []int
-	for i, meteor := range g.meteors {
+	for i, meteor := range g.meteors.meteors {
 		if meteor.CheckCollision(g.player.position.X, g.player.position.Y, g.player.getWidth(), g.player.getHeight()) {
 			collidingMeteors = append(collidingMeteors, i)
 		}

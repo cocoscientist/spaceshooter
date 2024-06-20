@@ -11,9 +11,9 @@ type Enemies struct {
 	enemySpawnTimer *Timer
 }
 
-func NewEnemies() *Enemies {
+func NewEnemies(resetTime time.Duration) *Enemies {
 	e := &Enemies{}
-	e.enemySpawnTimer = NewTimer(2500 * time.Millisecond)
+	e.enemySpawnTimer = NewTimer(resetTime)
 	return e
 
 }
@@ -21,13 +21,13 @@ func NewEnemies() *Enemies {
 func (e *Enemies) UpdateAllEnemies(p *Player, baseSpeed float64) {
 	e.enemySpawnTimer.Update()
 	if e.enemySpawnTimer.IsReady() {
-		e.addRandomEnemy(baseSpeed)
+		e.AddRandomEnemy(baseSpeed)
 		e.enemySpawnTimer.Reset()
 	}
 	for i, enemy := range e.enemies {
 		enemy.Update(p)
 		if enemy.position.Y > 600 {
-			e.removeEnemy(i)
+			e.RemoveEnemy(i)
 		}
 	}
 }
@@ -38,10 +38,10 @@ func (e *Enemies) DrawAllEnemies(screen *ebiten.Image) {
 	}
 }
 
-func (e *Enemies) addRandomEnemy(baseSpeed float64) {
+func (e *Enemies) AddRandomEnemy(baseSpeed float64) {
 	e.enemies = append(e.enemies, NewEnemy(baseSpeed))
 }
 
-func (e *Enemies) removeEnemy(position int) {
+func (e *Enemies) RemoveEnemy(position int) {
 	e.enemies = append(e.enemies[:position], e.enemies[position+1:]...)
 }
