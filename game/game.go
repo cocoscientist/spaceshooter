@@ -33,9 +33,9 @@ type Game struct {
 
 func NewGame() *Game {
 	g := &Game{}
-	g.meteorSpawnTimer = NewTimer(2 * time.Second)
-	g.laserTimer = NewTimer(1 * time.Second)
-	g.speedupTimer = NewTimer(5 * time.Second)
+	g.meteorSpawnTimer = NewTimer(1250 * time.Millisecond)
+	g.laserTimer = NewTimer(1000 * time.Millisecond)
+	g.speedupTimer = NewTimer(3500 * time.Millisecond)
 	g.player = NewPlayer()
 	g.bg = NewBackground()
 	g.baseSpeed = initialBaseSpeed
@@ -71,7 +71,7 @@ func (g *Game) Update() error {
 		}
 		for i, meteor := range g.meteors {
 			meteor.Update()
-			if meteor.position.Y > 480 {
+			if meteor.position.Y > 600 {
 				g.meteors = append(g.meteors[:i], g.meteors[i+1:]...)
 			}
 		}
@@ -96,10 +96,6 @@ func (g *Game) Update() error {
 			g.lives--
 			if g.lives == 0 {
 				g.gameOver = true
-				g.baseSpeed = initialBaseSpeed
-				g.meteors = make([]*Meteor, 0)
-				g.lasers = make([]*Laser, 0)
-				g.player = nil
 			} else {
 				for _, meteorIndex := range collidingMeteors {
 					g.meteors = append(g.meteors[:meteorIndex], g.meteors[meteorIndex+1:]...)
@@ -137,12 +133,14 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
 func (g *Game) resetGame() {
 	g.gameOver = false
 	g.score = 0
-	g.player = NewPlayer()
-	g.meteorSpawnTimer = NewTimer(2 * time.Second)
-	g.laserTimer = NewTimer(1 * time.Second)
-	g.speedupTimer = NewTimer(5 * time.Second)
+	g.player.Reset()
+	g.meteorSpawnTimer.Reset()
+	g.laserTimer.Reset()
+	g.speedupTimer.Reset()
 	g.lives = startingLives
 	g.baseSpeed = initialBaseSpeed
+	g.lasers = make([]*Laser, 0)
+	g.meteors = make([]*Meteor, 0)
 }
 
 func (g *Game) getPlayerCollidingMeteors() []int {

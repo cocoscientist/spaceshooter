@@ -49,3 +49,10 @@ func (p *Player) getWidth() float64 {
 func (p *Player) getHeight() float64 {
 	return float64(p.sprite.Bounds().Dy())
 }
+
+func (p *Player) Reset() {
+	print(p.position.X, p.position.Y)
+	p.position.X = 350
+	p.position.Y = 500
+	print(p.position.X, p.position.Y)
+}
